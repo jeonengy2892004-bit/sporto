@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SPORTO — Checkout</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+:root {
+  --gold:        #b8b8b8;
+  --black:       #0a0a0c;
+  --gray:        #a8a8a8;
+  --light-gray:  #d6d6d6;
+  --white:       #ffffff;
+  --red:         #e0584a;
+  --green:       #3fb872;
+  --g1:          #e0e0e0;
+
+  --glass-bg:        rgba(255,255,255,0.06);
+  --glass-border:    rgba(255,255,255,0.14);
+  --glass-blur:      18px;
+}
+
+html { scroll-behavior:smooth; }
+body {
+  font-family:'Inter', sans-serif;
+  background:var(--black);
+  color:var(--white);
+  overflow-x:hidden;
+  font-weight:300;
+  letter-spacing:0.01em;
+  position:relative;
+  min-height:100vh;
+}
+
+body::before, body::after {
+  content:'';
+  position:fixed;
+  border-radius:50%;
+  filter:blur(90px);
+  pointer-events:none;
+  z-index:0;
+}
+body::before {
+  width:520px; height:520px; top:-160px; left:-160px;
+  background:radial-gradient(circle, rgba(56,142,255,0.28) 0%, transparent 70%);
+  animation:float1 16s ease-in-out infinite;
+}
+body::after {
+  width:480px; height:480px; bottom:-160px; right:-140px;
+  background:radial-gradient(circle, rgba(255,140,56,0.24) 0%, transparent 70%);
+  animation:float2 18s ease-in-out infinite;
+}
+@keyframes float1 { 0%,100%{transform:translate(0,0) scale(1);} 50%{transform:translate(40px,30px) scale(1.08);} }
+@keyframes float2 { 0%,100%{transform:translate(0,0) scale(1);} 50%{transform:translate(-30px,-25px) scale(1.06);} }
+
+header {
+  position:sticky; top:0; z-index:200;
+  background:rgba(10,10,12,0.55);
+  backdrop-filter:blur(20px) saturate(160%);
+  -webkit-backdrop-filter:blur(20px) saturate(160%);
+  border-bottom:1px solid rgba(255,255,255,0.1);
+}
+.header-inner {
+  max-width:1200px; margin:0 auto; padding:0 32px; height:68px;
+  display:flex; align-items:center; justify-content:space-between; gap:20px;
+}
+.back-btn {
+  display:flex; align-items:center; gap:6px;
+  font-size:11px; color:var(--gray); text-decoration:none;
+  font-weight:400; letter-spacing:1px; text-transform:uppercase;
+  transition:color 0.2s;
+}
+.back-btn:hover { color:var(--white); }
+.brand-name-header {
+  font-family:'Cormorant Garamond', serif;
+  font-size:28px; font-weight:700; letter-spacing:8px;
+  text-transform:uppercase; color:var(--white);
+  text-decoration:none;
+  position:absolute; left:50%; transform:translateX(-50%);
+}
+
+.page-title-wrap { max-width:900px; margin:0 auto; padding:32px 32px 0; position:relative; z-index:1; }
+.page-title {
+  font-family:'Cormorant Garamond', serif;
+  font-size:clamp(28px,4vw,40px); font-weight:700; letter-spacing:3px;
+  text-transform:uppercase; text-align:center;
+}
+.page-sub { text-align:center; font-size:11px; color:var(--gray); margin-top:8px; letter-spacing:1px; }
+
+/* ── STEPS ── */
+.steps { display:flex; align-items:center; justify-content:center; gap:10px; margin:28px 0; max-width:900px; margin-left:auto; margin-right:auto; position:relative; z-index:1; }
+.step { display:flex; align-items:center; gap:8px; font-size:10px; letter-spacing:1px; text-transform:uppercase; color:var(--gray); }
+.step-num {
+  width:24px; height:24px; border-radius:50%; background:var(--glass-bg); border:1px solid var(--glass-border);
+  display:flex; align-items:center; justify-content:center; font-size:11px; color:var(--gray);
+}
+.step.active .step-num { background:rgba(255,255,255,0.92); color:var(--black); border-color:transparent; }
+.step.active { color:var(--white); }
+.step-divider { width:30px; height:1px; background:var(--glass-border); }
+
+.checkout-layout {
+  max-width:900px; margin:0 auto; padding:0 32px 80px;
+  display:grid; grid-template-columns:1.3fr 1fr; gap:32px; align-items:start;
+  position:relative; z-index:1;
+}
+@media(max-width:768px){ .checkout-layout{ grid-template-columns:1fr; padding:0 16px 48px; } }
+
+.card {
+  background:var(--glass-bg);
+  backdrop-filter:blur(var(--glass-blur)) saturate(160%);
+  -webkit-backdrop-filter:blur(var(--glass-blur)) saturate(160%);
+  border:1px solid var(--glass-border);
+  border-radius:18px; padding:28px;
+}
+.card + .card { margin-top:20px; }
+.card-title { font-size:11px; font-weight:600; letter-spacing:3px; text-transform:uppercase; color:var(--gray); margin-bottom:18px; }
+
+.form-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:14px; }
+.form-row.full { grid-template-columns:1fr; }
+.form-field label { display:block; font-size:10px; letter-spacing:1px; text-transform:uppercase; color:var(--gray); margin-bottom:6px; }
+.form-field input, .form-field select, .form-field textarea {
+  width:100%; padding:12px 14px; border:1px solid var(--glass-border); border-radius:10px;
+  background:rgba(255,255,255,0.04); color:var(--white); font-family:'Inter', sans-serif; font-size:13px;
+  outline:none; transition:border 0.2s;
+}
+.form-field input:focus, .form-field select:focus, .form-field textarea:focus { border-color:rgba(255,255,255,0.4); }
+.form-field input::placeholder, .form-field textarea::placeholder { color:#777; }
+.form-field select option { background:#1a1a1c; }
+
+.payment-option {
+  display:flex; align-items:center; gap:12px; padding:14px 16px;
+  border:1px solid var(--glass-border); border-radius:12px; margin-bottom:10px;
+  cursor:pointer; transition:all 0.2s;
+}
+.payment-option:hover { border-color:rgba(255,255,255,0.3); }
+.payment-option input { accent-color:var(--white); width:16px; height:16px; }
+.payment-option .label { font-size:13px; color:var(--white); }
+.payment-option .desc { font-size:11px; color:var(--gray); margin-top:2px; }
+
+/* ── ORDER SUMMARY ── */
+.summary-item { display:flex; gap:12px; padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.08); }
+.summary-item img { width:54px; height:54px; border-radius:8px; object-fit:cover; background:rgba(255,255,255,0.05); flex-shrink:0; border:1px solid rgba(255,255,255,0.1); }
+.summary-item-info { flex:1; }
+.summary-item-name { font-size:12px; color:var(--white); margin-bottom:3px; }
+.summary-item-qty { font-size:11px; color:var(--gray); }
+.summary-item-price { font-size:12px; color:var(--g1); font-weight:500; }
+.summary-row { display:flex; justify-content:space-between; font-size:12px; color:var(--gray); margin-top:14px; }
+.summary-row.total { font-size:15px; font-weight:600; color:var(--white); margin-top:10px; padding-top:10px; border-top:1px solid rgba(255,255,255,0.1); }
+
+.place-order-btn {
+  width:100%; padding:16px; margin-top:18px;
+  background:rgba(255,255,255,0.92); color:var(--black); border:none;
+  border-radius:999px; font-size:11px; font-weight:600; letter-spacing:3px; text-transform:uppercase;
+  cursor:pointer; transition:all 0.2s;
+}
+.place-order-btn:hover { background:var(--white); }
+.place-order-btn:disabled { opacity:0.4; cursor:not-allowed; }
+
+.empty-cart-msg { text-align:center; padding:60px 20px; color:var(--gray); }
+.empty-cart-msg a { color:var(--white); }
+
+/* ── SUCCESS ── */
+.success-screen {
+  max-width:520px; margin:60px auto; text-align:center; padding:48px 32px;
+  position:relative; z-index:1;
+}
+.success-icon {
+  width:80px; height:80px; border-radius:50%; background:rgba(63,184,114,0.15);
+  border:1px solid rgba(63,184,114,0.4); display:flex; align-items:center; justify-content:center;
+  margin:0 auto 24px; font-size:36px;
+}
+.success-title { font-family:'Cormorant Garamond', serif; font-size:30px; font-weight:700; letter-spacing:2px; margin-bottom:12px; }
+.success-text { font-size:13px; color:var(--gray); margin-bottom:28px; line-height:1.8; }
+.success-order-id { font-size:11px; letter-spacing:2px; color:var(--gray); margin-bottom:28px; }
+.back-shop-btn {
+  display:inline-block; padding:14px 32px; background:rgba(255,255,255,0.92); color:var(--black);
+  border-radius:999px; text-decoration:none; font-size:11px; font-weight:600; letter-spacing:3px; text-transform:uppercase;
+  transition:all 0.2s;
+}
+.back-shop-btn:hover { background:var(--white); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <a href="shop.html" class="back-btn">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      Back to Shop
+    </a>
+    <a href="shop.html" class="brand-name-header">SPORTO</a>
+    <div style="width:80px;"></div>
+  </div>
+</header>
+
+<div id="checkoutFlow">
+
+  <div class="page-title-wrap">
+    <div class="page-title">Checkout</div>
+    <div class="page-sub">Free shipping on orders above 900 EGP</div>
+  </div>
+
+  <div class="steps">
+    <div class="step active"><div class="step-num">1</div> Details</div>
+    <div class="step-divider"></div>
+    <div class="step active"><div class="step-num">2</div> Payment</div>
+    <div class="step-divider"></div>
+    <div class="step"><div class="step-num">3</div> Confirm</div>
+  </div>
+
+  <div class="checkout-layout">
+
+    <!-- LEFT: FORM -->
+    <div>
+      <div class="card">
+        <div class="card-title">Shipping Details</div>
+        <div class="form-row">
+          <div class="form-field"><label>Full Name</label><input type="text" id="custName" placeholder="Your full name"></div>
+          <div class="form-field"><label>Phone</label><input type="tel" id="custPhone" placeholder="01xxxxxxxxx"></div>
+        </div>
+        <div class="form-row full">
+          <div class="form-field"><label>Email (optional)</label><input type="email" id="custEmail" placeholder="you@example.com"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-field"><label>Governorate</label>
+            <select id="custGov">
+              <option value="">Select governorate</option>
+              <option>Cairo</option><option>Giza</option><option>Alexandria</option>
+              <option>Qalyubia</option><option>Sharqia</option><option>Dakahlia</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div class="form-field"><label>City / Area</label><input type="text" id="custCity" placeholder="e.g. Nasr City"></div>
+        </div>
+        <div class="form-row full">
+          <div class="form-field"><label>Full Address</label><textarea id="custAddress" rows="3" placeholder="Street, building, floor, apartment..."></textarea></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Payment Method</div>
+        <label class="payment-option">
+          <input type="radio" name="payment" value="cod" checked>
+          <div><div class="label">💵 Cash on Delivery</div><div class="desc">Pay when your order arrives</div></div>
+        </label>
+        <label class="payment-option">
+          <input type="radio" name="payment" value="card">
+          <div><div class="label">💳 Card Payment</div><div class="desc">Visa / Mastercard via secure gateway</div></div>
+        </label>
+      </div>
+    </div>
+
+    <!-- RIGHT: SUMMARY -->
+    <div>
+      <div class="card">
+        <div class="card-title">Order Summary</div>
+        <div id="orderItems"></div>
+        <div class="summary-row"><span>Subtotal</span><span id="sumSubtotal">0 EGP</span></div>
+        <div class="summary-row"><span>Shipping</span><span id="sumShipping">0 EGP</span></div>
+        <div class="summary-row total"><span>Total</span><span id="sumTotal">0 EGP</span></div>
+        <button class="place-order-btn" id="placeOrderBtn" onclick="placeOrder()">Place Order →</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- SUCCESS SCREEN (hidden until order placed) -->
+<div class="success-screen" id="successScreen" style="display:none;">
+  <div class="success-icon">✓</div>
+  <div class="success-title">Order Confirmed!</div>
+  <div class="success-text">Thank you for shopping with SPORTO. We've received your order and will contact you shortly to confirm delivery details.</div>
+  <div class="success-order-id" id="orderIdDisplay"></div>
+  <a href="shop.html" class="back-shop-btn">Continue Shopping</a>
+</div>
+
+<script src="config.js"></script>
+<script>
+let cart = JSON.parse(localStorage.getItem('sporto_cart') || '[]');
+
+document.addEventListener('DOMContentLoaded', () => {
+  renderOrderSummary();
+});
+
+function renderOrderSummary() {
+  const container = document.getElementById('orderItems');
+  const btn = document.getElementById('placeOrderBtn');
+
+  if (!cart.length) {
+    document.getElementById('checkoutFlow').innerHTML = `
+      <div class="empty-cart-msg">
+        <div style="font-size:48px;margin-bottom:16px;">👟</div>
+        <div style="margin-bottom:18px;">Your cart is empty.</div>
+        <a href="shop.html">← Back to shop</a>
+      </div>`;
+    return;
+  }
+
+  container.innerHTML = cart.map(item => `
+    <div class="summary-item">
+      <img src="${item.img}" alt="${item.name}" onerror="this.src='https://images.unsplash.com/photo-1483721310020-03333e577078?w=200&q=60'">
+      <div class="summary-item-info">
+        <div class="summary-item-name">${item.name}</div>
+        <div class="summary-item-qty">Qty: ${item.qty}</div>
+      </div>
+      <div class="summary-item-price">${item.price * item.qty} EGP</div>
+    </div>`).join('');
+
+  const subtotal = cart.reduce((s,i) => s + i.price*i.qty, 0);
+  const shipping = subtotal >= 900 ? 0 : 80;
+  document.getElementById('sumSubtotal').textContent = `${subtotal} EGP`;
+  document.getElementById('sumShipping').textContent = shipping === 0 ? 'Free' : `${shipping} EGP`;
+  document.getElementById('sumTotal').textContent = `${subtotal + shipping} EGP`;
+}
+
+function placeOrder() {
+  const name = document.getElementById('custName').value.trim();
+  const phone = document.getElementById('custPhone').value.trim();
+  const gov = document.getElementById('custGov').value;
+  const city = document.getElementById('custCity').value.trim();
+  const address = document.getElementById('custAddress').value.trim();
+
+  if (!name || !phone || !gov || !city || !address) {
+    alert('Please fill in all required shipping details.');
+    return;
+  }
+  if (!cart.length) return;
+
+  const orderId = 'SPT' + Date.now().toString().slice(-8);
+  const subtotal = cart.reduce((s,i) => s + i.price*i.qty, 0);
+  const shipping = subtotal >= 900 ? 0 : 80;
+  const payment = document.querySelector('input[name="payment"]:checked').value;
+
+  const order = {
+    orderId, name, phone, gov, city, address, payment,
+    items: cart, subtotal, shipping, total: subtotal + shipping,
+    timestamp: new Date().toISOString()
+  };
+
+  saveOrderToFirebase(order);
+  sendTelegramNotification(order);
+
+  // clear cart
+  localStorage.removeItem('sporto_cart');
+  cart = [];
+
+  // show success screen
+  document.getElementById('checkoutFlow').style.display = 'none';
+  document.getElementById('successScreen').style.display = 'block';
+  document.getElementById('orderIdDisplay').textContent = `Order ID: ${orderId}`;
+}
+
+async function saveOrderToFirebase(order) {
+  try {
+    const { initializeApp, getApps } = await import('https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js');
+    const { getFirestore, collection, addDoc } = await import('https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js');
+    const cfg = window.SPORTO_FIREBASE_CONFIG || window.ARQA_FIREBASE_CONFIG;
+    if (cfg && cfg.apiKey !== "YOUR_API_KEY") {
+      const app = getApps().length ? getApps()[0] : initializeApp(cfg);
+      await addDoc(collection(getFirestore(app), 'orders'), order);
+    }
+  } catch(e) { console.log('Order save error:', e.message); }
+}
+
+async function sendTelegramNotification(order) {
+  try {
+    const tg = window.SPORTO_TELEGRAM_CONFIG;
+    if (!tg || tg.botToken === "YOUR_BOT_TOKEN" || !tg.chatId) {
+      console.log('Telegram not configured — skipping notification');
+      return;
+    }
+
+    const itemsList = order.items.map(i => `  • ${i.name} × ${i.qty} — ${i.price * i.qty} EGP`).join('\n');
+    const paymentLabel = order.payment === 'cod' ? '💵 Cash on Delivery' : '💳 Card Payment';
+
+    const message =
+`🛍️ *New Order — SPORTO*
+
+🆔 Order ID: \`${order.orderId}\`
+
+👤 *Customer Details*
+Name: ${order.name}
+Phone: ${order.phone}
+Governorate: ${order.gov}
+City/Area: ${order.city}
+Address: ${order.address}
+
+📦 *Items*
+${itemsList}
+
+💰 *Payment*
+Method: ${paymentLabel}
+Subtotal: ${order.subtotal} EGP
+Shipping: ${order.shipping === 0 ? 'Free' : order.shipping + ' EGP'}
+*Total: ${order.total} EGP*
+
+🕐 ${new Date(order.timestamp).toLocaleString()}`;
+
+    await fetch(`https://api.telegram.org/bot${tg.botToken}/sendMessage`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        chat_id: tg.chatId,
+        text: message,
+        parse_mode: 'Markdown'
+      })
+    });
+  } catch(e) {
+    console.log('Telegram notification error:', e.message);
+  }
+}
+</script>
+</body>
+</html>

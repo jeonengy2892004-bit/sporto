@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SPORTO — Shipping Info</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+:root {
+  --black:#0a0a0c; 
+  --gray:#a8a8a8; 
+  --light-gray:#d6d6d6; 
+  --white:#ffffff; 
+  --green:#3fb872;
+  --glass-bg: rgba(255,255,255,0.06); 
+  --glass-border: rgba(255,255,255,0.14); 
+  --glass-blur:18px;
+}
+html { scroll-behavior:smooth; }
+body { 
+    font-family:'Inter', sans-serif; 
+    background:var(--black); 
+    color:var(--white); 
+    overflow-x:hidden; 
+    font-weight:300; 
+    letter-spacing:0.01em; 
+    position:relative; 
+    min-height:100vh; 
+}
+
+body::before, body::after { content:''; position:fixed; border-radius:50%; filter:blur(90px); pointer-events:none; z-index:0; }
+body::before { width:520px; height:520px; top:-160px; left:-160px; background:radial-gradient(circle, rgba(56,142,255,0.28) 0%, transparent 70%); animation:float1 16s ease-in-out infinite; }
+body::after { width:480px; height:480px; bottom:-160px; right:-140px; background:radial-gradient(circle, rgba(255,140,56,0.24) 0%, transparent 70%); animation:float2 18s ease-in-out infinite; }
+@keyframes float1 { 0%,100%{transform:translate(0,0) scale(1);} 50%{transform:translate(40px,30px) scale(1.08);} }
+@keyframes float2 { 0%,100%{transform:translate(0,0) scale(1);} 50%{transform:translate(-30px,-25px) scale(1.06);} }
+
+header { position:sticky; top:0; z-index:200; background:rgba(10,10,12,0.55); backdrop-filter:blur(20px) saturate(160%); -webkit-backdrop-filter:blur(20px) saturate(160%); border-bottom:1px solid rgba(255,255,255,0.1); }
+.header-inner { max-width:1200px; margin:0 auto; padding:0 32px; height:68px; display:flex; align-items:center; justify-content:space-between; gap:20px; }
+.back-btn { display:flex; align-items:center; gap:6px; font-size:11px; color:var(--gray); text-decoration:none; font-weight:400; letter-spacing:1px; text-transform:uppercase; transition:color 0.2s; }
+.back-btn:hover { color:var(--white); }
+.brand-name-header { font-family:'Cormorant Garamond', serif; font-size:28px; font-weight:700; letter-spacing:8px; text-transform:uppercase; color:var(--white); text-decoration:none; position:absolute; left:50%; transform:translateX(-50%); }
+
+.content { max-width:760px; margin:0 auto; padding:52px 32px 80px; position:relative; z-index:1; }
+.page-title { font-family:'Cormorant Garamond', serif; font-size:clamp(30px,5vw,44px); font-weight:700; letter-spacing:3px; text-transform:uppercase; text-align:center; margin-bottom:10px; }
+.page-sub { text-align:center; font-size:12px; color:var(--gray); margin-bottom:40px; letter-spacing:1px; }
+
+.policy-card { background:var(--glass-bg); backdrop-filter:blur(var(--glass-blur)) saturate(160%); -webkit-backdrop-filter:blur(var(--glass-blur)) saturate(160%); border:1px solid var(--glass-border); border-radius:18px; padding:28px 30px; margin-bottom:18px; }
+.policy-card h3 { font-size:14px; font-weight:600; letter-spacing:1px; margin-bottom:12px; display:flex; align-items:center; gap:10px; }
+.policy-card p, .policy-card li { font-size:13px; color:var(--light-gray); line-height:1.9; font-weight:300; }
+.policy-card ul { padding-left:18px; margin-top:8px; }
+.policy-card li { margin-bottom:6px; }
+
+.rates-table { width:100%; border-collapse:collapse; margin-top:10px; }
+.rates-table th, .rates-table td { text-align:left; padding:10px 8px; font-size:12px; border-bottom:1px solid rgba(255,255,255,0.08); }
+.rates-table th { color:var(--gray); font-weight:500; letter-spacing:1px; text-transform:uppercase; font-size:10px; }
+.rates-table td { color:var(--light-gray); }
+.free-tag { color:var(--green); font-weight:600; }
+
+footer { border-top:1px solid rgba(255,255,255,0.08); padding:28px 24px; text-align:center; font-size:10px; color:#777; letter-spacing:1px; position:relative; z-index:1; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <a href="shop.html" class="back-btn">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      Back
+    </a>
+    <a href="shop.html" class="brand-name-header">SPORTO</a>
+    <div style="width:60px;"></div>
+  </div>
+</header>
+
+<div class="content">
+  <div class="page-title">Shipping Info</div>
+  <div class="page-sub">Delivery times, rates, and order tracking</div>
+
+  <div class="policy-card">
+    <h3>🚚 Delivery Times</h3>
+    <p>Orders are processed within 1-2 business days. Standard delivery takes <strong>2-5 business days</strong> depending on your governorate. You'll receive a call from our courier before delivery.</p>
+  </div>
+
+  <div class="policy-card">
+    <h3>💰 Shipping Rates</h3>
+    <table class="rates-table">
+      <tr><th>Order Value</th><th>Shipping Fee</th></tr>
+      <tr><td>Below 900 EGP</td><td>80 EGP</td></tr>
+      <tr><td>900 EGP and above</td><td class="free-tag">Free</td></tr>
+    </table>
+  </div>
+
+  <div class="policy-card">
+    <h3>💵 Payment Options</h3>
+    <ul>
+      <li>Cash on Delivery (COD) — available nationwide</li>
+      <li>Card Payment — Visa / Mastercard via secure gateway</li>
+    </ul>
+  </div>
+
+  <div class="policy-card">
+    <h3>📍 Areas We Deliver To</h3>
+    <p>We currently deliver to all governorates across Egypt. Remote areas may require an additional 1-2 business days.</p>
+  </div>
+
+  <div class="policy-card">
+    <h3>📦 Order Tracking</h3>
+    <p>Once your order ships, you'll receive a confirmation call with the expected delivery date. For any updates on your order status, reach out via our <a href="contact.html" style="color:var(--white);">Contact page</a> with your order ID.</p>
+  </div>
+</div>
+
+<footer>© 2026 SPORTO &nbsp;·&nbsp; Free Shipping on orders above 900 EGP</footer>
+
+</body>
+</html>

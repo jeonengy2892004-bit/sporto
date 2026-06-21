@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SPORTO — Contact Us</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+:root {
+  --black:#0a0a0c; --gray:#a8a8a8; --light-gray:#d6d6d6; --white:#ffffff; --green:#3fb872;
+  --glass-bg: rgba(255,255,255,0.06); --glass-border: rgba(255,255,255,0.14); --glass-blur:18px;
+}
+html { scroll-behavior:smooth; }
+body { font-family:'Inter', sans-serif; background:var(--black); color:var(--white); overflow-x:hidden; font-weight:300; letter-spacing:0.01em; position:relative; min-height:100vh; }
+body::before, body::after { content:''; position:fixed; border-radius:50%; filter:blur(90px); pointer-events:none; z-index:0; }
+body::before { width:520px; height:520px; top:-160px; left:-160px; background:radial-gradient(circle, rgba(56,142,255,0.28) 0%, transparent 70%); animation:float1 16s ease-in-out infinite; }
+body::after { width:480px; height:480px; bottom:-160px; right:-140px; background:radial-gradient(circle, rgba(255,140,56,0.24) 0%, transparent 70%); animation:float2 18s ease-in-out infinite; }
+@keyframes float1 { 0%,100%{transform:translate(0,0) scale(1);} 50%{transform:translate(40px,30px) scale(1.08);} }
+@keyframes float2 { 0%,100%{transform:translate(0,0) scale(1);} 50%{transform:translate(-30px,-25px) scale(1.06);} }
+
+header { position:sticky; top:0; z-index:200; background:rgba(10,10,12,0.55); backdrop-filter:blur(20px) saturate(160%); -webkit-backdrop-filter:blur(20px) saturate(160%); border-bottom:1px solid rgba(255,255,255,0.1); }
+.header-inner { max-width:1200px; margin:0 auto; padding:0 32px; height:68px; display:flex; align-items:center; justify-content:space-between; gap:20px; }
+.back-btn { display:flex; align-items:center; gap:6px; font-size:11px; color:var(--gray); text-decoration:none; font-weight:400; letter-spacing:1px; text-transform:uppercase; transition:color 0.2s; }
+.back-btn:hover { color:var(--white); }
+.brand-name-header { font-family:'Cormorant Garamond', serif; font-size:28px; font-weight:700; letter-spacing:8px; text-transform:uppercase; color:var(--white); text-decoration:none; position:absolute; left:50%; transform:translateX(-50%); }
+
+.content { max-width:760px; margin:0 auto; padding:52px 32px 80px; position:relative; z-index:1; }
+.page-title { font-family:'Cormorant Garamond', serif; font-size:clamp(30px,5vw,44px); font-weight:700; letter-spacing:3px; text-transform:uppercase; text-align:center; margin-bottom:10px; }
+.page-sub { text-align:center; font-size:12px; color:var(--gray); margin-bottom:40px; letter-spacing:1px; }
+
+.contact-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-bottom:32px; }
+@media(max-width:640px){ .contact-grid { grid-template-columns:1fr; } }
+.contact-card {
+  background:var(--glass-bg); backdrop-filter:blur(var(--glass-blur)) saturate(160%); -webkit-backdrop-filter:blur(var(--glass-blur)) saturate(160%);
+  border:1px solid var(--glass-border); border-radius:18px; padding:24px; text-align:center; text-decoration:none; color:var(--white);
+  transition:all 0.25s;
+}
+.contact-card:hover { transform:translateY(-3px); border-color:rgba(255,255,255,0.3); }
+.contact-icon { font-size:26px; margin-bottom:12px; }
+.contact-label { font-size:11px; letter-spacing:2px; text-transform:uppercase; color:var(--gray); margin-bottom:6px; }
+.contact-value { font-size:13px; color:var(--white); }
+
+.form-card { background:var(--glass-bg); backdrop-filter:blur(var(--glass-blur)) saturate(160%); -webkit-backdrop-filter:blur(var(--glass-blur)) saturate(160%); border:1px solid var(--glass-border); border-radius:18px; padding:28px 30px; }
+.card-title { font-size:11px; font-weight:600; letter-spacing:3px; text-transform:uppercase; color:var(--gray); margin-bottom:18px; }
+.form-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:14px; }
+.form-row.full { grid-template-columns:1fr; }
+.form-field label { display:block; font-size:10px; letter-spacing:1px; text-transform:uppercase; color:var(--gray); margin-bottom:6px; }
+.form-field input, .form-field textarea {
+  width:100%; padding:12px 14px; border:1px solid var(--glass-border); border-radius:10px;
+  background:rgba(255,255,255,0.04); color:var(--white); font-family:'Inter', sans-serif; font-size:13px; outline:none; transition:border 0.2s;
+}
+.form-field input:focus, .form-field textarea:focus { border-color:rgba(255,255,255,0.4); }
+.form-field input::placeholder, .form-field textarea::placeholder { color:#777; }
+.submit-btn {
+  width:100%; padding:15px; margin-top:6px; background:rgba(255,255,255,0.92); color:var(--black); border:none;
+  border-radius:999px; font-size:11px; font-weight:600; letter-spacing:3px; text-transform:uppercase; cursor:pointer; transition:all 0.2s;
+}
+.submit-btn:hover { background:var(--white); }
+.success-msg { display:none; text-align:center; padding:16px; color:var(--green); font-size:13px; margin-top:14px; }
+
+footer { border-top:1px solid rgba(255,255,255,0.08); padding:28px 24px; text-align:center; font-size:10px; color:#777; letter-spacing:1px; position:relative; z-index:1; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <a href="shop.html" class="back-btn">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      Back
+    </a>
+    <a href="shop.html" class="brand-name-header">SPORTO</a>
+    <div style="width:60px;"></div>
+  </div>
+</header>
+
+<div class="content">
+  <div class="page-title">Contact Us</div>
+  <div class="page-sub">We're here to help with orders, sizing, or anything else</div>
+
+  <div class="contact-grid">
+    <a href="https://wa.me/201000000000" target="_blank" class="contact-card">
+      <div class="contact-icon">💬</div>
+      <div class="contact-label">WhatsApp</div>
+      <div class="contact-value">Chat with us</div>
+    </a>
+    <a href="mailto:support@sporto.com" class="contact-card">
+      <div class="contact-icon">✉️</div>
+      <div class="contact-label">Email</div>
+      <div class="contact-value">support@sporto.com</div>
+    </a>
+    <a href="https://www.instagram.com/" target="_blank" class="contact-card">
+      <div class="contact-icon">📷</div>
+      <div class="contact-label">Instagram</div>
+      <div class="contact-value">@sporto</div>
+    </a>
+  </div>
+
+  <div class="form-card">
+    <div class="card-title">Send Us a Message</div>
+    <div class="form-row">
+      <div class="form-field"><label>Name</label><input type="text" id="cName" placeholder="Your name"></div>
+      <div class="form-field"><label>Phone</label><input type="tel" id="cPhone" placeholder="01xxxxxxxxx"></div>
+    </div>
+    <div class="form-row full">
+      <div class="form-field"><label>Order ID (optional)</label><input type="text" id="cOrder" placeholder="e.g. SPT12345678"></div>
+    </div>
+    <div class="form-row full">
+      <div class="form-field"><label>Message</label><textarea id="cMessage" rows="4" placeholder="How can we help?"></textarea></div>
+    </div>
+    <button class="submit-btn" onclick="sendMessage()">Send Message →</button>
+    <div class="success-msg" id="successMsg">✓ Thanks! We'll get back to you shortly.</div>
+  </div>
+</div>
+
+<footer>© 2026 SPORTO &nbsp;·&nbsp; We usually respond within 24 hours</footer>
+
+<script>
+function sendMessage() {
+  const name = document.getElementById('cName').value.trim();
+  const phone = document.getElementById('cPhone').value.trim();
+  const message = document.getElementById('cMessage').value.trim();
+  if (!name || !phone || !message) {
+    alert('Please fill in your name, phone, and message.');
+    return;
+  }
+  document.getElementById('successMsg').style.display = 'block';
+  document.getElementById('cName').value = '';
+  document.getElementById('cPhone').value = '';
+  document.getElementById('cOrder').value = '';
+  document.getElementById('cMessage').value = '';
+}
+</script>
+</body>
+</html>
