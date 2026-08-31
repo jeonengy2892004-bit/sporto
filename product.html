@@ -438,6 +438,36 @@ header {
 @media(max-width:480px){
   .product-page { gap:20px; }
 }
+
+
+/* ── SPORTO IMAGE LOADING PLACEHOLDER ── */
+@keyframes sportoImageShimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+.product-img-wrapper img,
+.category-card img,
+.cart-item-img,
+.summary-item img,
+.thumb,
+#mainImg,
+.table-img {
+  background: linear-gradient(110deg, rgba(255,255,255,0.045) 8%, rgba(255,255,255,0.14) 18%, rgba(255,255,255,0.045) 33%);
+  background-size: 200% 100%;
+  animation: sportoImageShimmer 1.45s ease-in-out infinite;
+}
+img.image-loaded {
+  animation: none;
+  background: transparent;
+}
+img.image-failed {
+  animation: none;
+  background: linear-gradient(135deg, rgba(255,255,255,0.10), rgba(255,255,255,0.035));
+}
+@media (prefers-reduced-motion: reduce) {
+  img:not(.image-loaded) { animation: none; }
+}
+
 </style>
 </head>
 <body>
@@ -488,7 +518,7 @@ header {
     <div class="thumbs-col" id="thumbsRow"></div>
     <div class="main-img-wrap">
       <div class="discount-badge" id="discountBadge" style="display:none;"></div>
-      <img id="mainImg" src="" alt="">
+      <img id="mainImg" src="" alt="" onload="this.classList.add('image-loaded')">
     </div>
   </div>
 
@@ -565,7 +595,7 @@ header {
 <script>
 let PRODUCTS = [];
 
-const CATEGORY_NAMES = { men:'Men', women:'Women', shoes:'Shoes', activewear:'Activewear', outerwear:'Outerwear', accessories:'Accessories', sets:'Sets & Offers' };
+const GENDER_NAMES = { men:'Men', women:'Women', unisex:'Unisex' };
 
 let cart = JSON.parse(localStorage.getItem('sporto_cart') || '[]');
 let currentProduct = null;
@@ -597,7 +627,8 @@ function renderProduct(p) {
   document.title = `SPORTO — ${p.name}`;
 
   // Breadcrumb
-  document.getElementById('bcCategory').innerHTML = `<a href="collection.html?cat=${p.category}" style="color:var(--gray);text-decoration:none;">${CATEGORY_NAMES[p.category] || p.category}</a>`;
+  const genderLabel = GENDER_NAMES[p.gender] || p.gender || 'All Products';
+  document.getElementById('bcCategory').innerHTML = `<a href="collection.html?gender=${p.gender || ''}" style="color:var(--gray);text-decoration:none;">${genderLabel}</a>`;
   document.getElementById('bcName').textContent = p.name;
 
   // Images
@@ -607,6 +638,7 @@ function renderProduct(p) {
   thumbsRow.innerHTML = p.images.map((img,i) => `
     <img class="thumb ${i===0?'active':''}" src="${img}" alt=""
          onclick="switchImg(this,'${img}')"
+         onload="this.classList.add('image-loaded')"
          onerror="this.style.display='none'">`).join('');
 
   // Discount badge
@@ -619,7 +651,7 @@ function renderProduct(p) {
   }
 
   // Info
-  document.getElementById('pCategory').textContent = CATEGORY_NAMES[p.category] || p.category;
+  document.getElementById('pCategory').textContent = genderLabel;
   document.getElementById('pName').textContent = p.name;
 
   // Price
@@ -651,7 +683,7 @@ function renderProduct(p) {
   document.getElementById('pDesc').textContent = p.description || '';
 
   // Related products
-  const related = PRODUCTS.filter(r => r.category === p.category && r.id !== p.id)
+  const related = PRODUCTS.filter(r => r.id !== p.id && (r.gender === p.gender || r.gender === 'unisex' || p.gender === 'unisex'))
     .sort(() => Math.random() - 0.5).slice(0, 4);
   const grid = document.getElementById('relatedGrid');
   if (grid) {
@@ -661,7 +693,7 @@ function renderProduct(p) {
            onmouseover="this.style.transform='translateY(-4px)';this.style.boxShadow='0 16px 36px rgba(0,0,0,0.4)'"
            onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='none'">
         <img src="${r.images[0]}" style="width:100%;aspect-ratio:1;object-fit:cover;"
-             onerror="this.src='https://images.unsplash.com/photo-1483721310020-03333e577078?w=400'">
+             onload="this.classList.add('image-loaded')" onerror="this.onerror=null; this.removeAttribute('src'); this.classList.add('image-failed')">
         <div style="padding:14px;">
           <div style="font-size:12px;font-weight:400;margin-bottom:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:0.3px;color:var(--white);">${r.name}</div>
           <div style="font-size:14px;font-weight:500;color:${r.oldPrice && r.oldPrice > r.price ? 'var(--red)' : 'var(--white)'};">${r.price} EGP</div>
@@ -734,7 +766,7 @@ function renderCartItems() {
   }
   container.innerHTML = cart.map(item => `
     <div class="cart-item">
-      <img class="cart-item-img" src="${item.img}" alt="${item.name}" onerror="this.src='https://images.unsplash.com/photo-1483721310020-03333e577078?w=200&q=60'">
+      <img class="cart-item-img" src="${item.img}" alt="${item.name}" onload="this.classList.add('image-loaded')" onerror="this.onerror=null; this.removeAttribute('src'); this.classList.add('image-failed')">
       <div class="cart-item-info">
         <div class="cart-item-name">${item.name}</div>
         <div class="cart-item-price">${item.price} EGP × ${item.qty}</div>

@@ -190,57 +190,60 @@ header {
 
 /* ── HERO ── */
 .hero {
-  position: relative; height: 80vh; min-height: 520px; max-height: 720px;
-  overflow: hidden; background: var(--black);
-  display: flex; align-items: center; justify-content: center;
-  z-index: 1;
+  position: relative; height: clamp(560px, 68vw, 720px); min-height: 540px; max-height: 760px;
+  overflow: hidden; background: #f5f5f3;
+  display: flex; align-items: center; z-index: 1;
 }
 .hero-bg {
   position: absolute; inset: 0;
-  background-image: url(images/cover.jpg);
-  background-size: cover; 
+  background-image: url('images/cover.jpg');
+  background-size: cover;
   background-position: center;
-  opacity: 0.5; 
-  transition: transform 0.1s;
+  opacity: 1;
+  transform: scale(1.01);
+  transition: transform 0.8s ease;
 }
 .hero-overlay {
   position: absolute; inset: 0;
-  background: linear-gradient(to bottom, rgba(10,10,12,0.05) 0%, rgba(10,10,12,0.25) 100%);
+  background:
+    linear-gradient(90deg, rgba(255,255,255,0.97) 0%, rgba(255,255,255,0.90) 22%, rgba(255,255,255,0.52) 42%, rgba(255,255,255,0.08) 69%, rgba(255,255,255,0) 100%),
+    linear-gradient(180deg, rgba(255,255,255,0.04) 0%, rgba(10,10,12,0.12) 100%);
 }
-.hero-content { position: relative; text-align: center; color: white; z-index: 2; padding: 20px; }
+.hero-content {
+  position: relative; width: min(1200px, calc(100% - 64px)); margin: 0 auto;
+  color: #0a0a0c; z-index: 2; padding: 40px 0;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.hero-copy { max-width: 440px; }
+.hero-kicker {
+  display: inline-flex; align-items: center; gap: 10px; margin-bottom: 20px;
+  font-size: 9px; font-weight: 600; letter-spacing: 3px; color: #6b6b6b;
+  text-transform: uppercase;
+}
+.hero-kicker::before { content: ''; width: 28px; height: 1px; background: #0a0a0c; }
 .hero-title {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: clamp(52px, 9vw, 104px);
-  font-weight: 700; letter-spacing: 14px; margin-bottom: 10px;
-  text-shadow: 0 2px 12px rgba(0,0,0,0.4);
+  margin: 0 0 20px; font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(58px, 7.3vw, 100px); line-height: 0.86;
+  font-weight: 700; letter-spacing: -2px; color: #0a0a0c;
 }
+.hero-title span { display: block; font-style: italic; font-weight: 400; color: #515151; }
 .hero-subtitle {
-  font-size: 10px; letter-spacing: 6px; text-transform: uppercase;
-  opacity: 0.7; margin-bottom: 44px; font-weight: 300;
+  max-width: 330px; margin: 0 0 30px; color: #4f4f4f;
+  font-size: 12px; line-height: 1.75; letter-spacing: 0.6px; font-weight: 400;
 }
-
-.hero-welcome {
-  font-size: 13px;
-  letter-spacing: 3px;
-  color: rgba(255,255,255,0.85);
-  margin-bottom: 18px;
-  opacity: 0;
-  animation: fadeUp 1s ease 0.5s forwards;
+.hero-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.hero-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 16px;
+  min-height: 48px; padding: 0 22px; border-radius: 999px;
+  font-size: 9px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase;
+  text-decoration: none; cursor: pointer; transition: transform 0.25s ease, background 0.25s ease, color 0.25s ease;
 }
-
-.liquid-glass-btn {
-  display: inline-flex; align-items: center; gap: 10px;
-  padding: 14px 40px;
-  background: rgba(255,255,255,0.1);
-  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255,255,255,0.5); border-radius: 999px;
-  color: white; font-size: 10px; font-weight: 500; letter-spacing: 4px;
-  text-transform: uppercase; cursor: pointer; transition: all 0.3s; text-decoration: none;
-}
-.liquid-glass-btn:hover {
-  background: rgba(255,255,255,0.2); transform: translateY(-2px);
-  border-color: rgba(255,255,255,0.8);
-}
+.hero-btn span { font-size: 16px; line-height: 0; font-weight: 300; }
+.hero-btn-primary { background: #0a0a0c; color: #fff; box-shadow: 0 12px 24px rgba(10,10,12,0.16); }
+.hero-btn-primary:hover { background: #2b2b2d; transform: translateY(-3px); }
+.hero-btn-ghost { color: #0a0a0c; border: 1px solid rgba(10,10,12,0.28); background: rgba(255,255,255,0.28); backdrop-filter: blur(10px); }
+.hero-btn-ghost:hover { background: rgba(255,255,255,0.76); transform: translateY(-3px); }
+.hero-welcome, .liquid-glass-btn { display: none; }
 
 /* ── SECTIONS ── */
 .section { padding: 72px 24px; max-width: 1200px; margin: 0 auto; position: relative; z-index: 1; }
@@ -514,6 +517,28 @@ footer {
   .products-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
   .section { padding: 48px 16px; }
 }
+@media (max-width: 768px) {
+  .hero { height: 76vh; min-height: 620px; max-height: 760px; align-items: flex-end; }
+  .hero-bg { background-position: 61% center; }
+  .hero-overlay {
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.02) 22%, rgba(255,255,255,0.25) 43%, rgba(255,255,255,0.94) 77%, rgba(255,255,255,0.99) 100%),
+      linear-gradient(90deg, rgba(255,255,255,0.06), rgba(255,255,255,0));
+  }
+  .hero-content { width: calc(100% - 32px); padding: 36px 0 34px; }
+  .hero-copy { max-width: 360px; }
+  .hero-title { font-size: clamp(58px, 14vw, 82px); margin-bottom: 16px; }
+  .hero-subtitle { max-width: 285px; margin-bottom: 22px; font-size: 11px; }
+  .hero-btn { min-height: 44px; padding: 0 17px; font-size: 8px; letter-spacing: 1.5px; gap: 10px; }
+}
+@media (max-width: 480px) {
+  .hero { min-height: 590px; height: 82vh; }
+  .hero-bg { background-position: 60% center; }
+  .hero-content { padding-bottom: 28px; }
+  .hero-kicker { margin-bottom: 14px; font-size: 8px; letter-spacing: 2px; }
+  .hero-title { font-size: clamp(54px, 16vw, 74px); }
+  .hero-actions { gap: 8px; }
+}
 
 /* ── HERO ANIMATION ── */
 @keyframes fadeUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
@@ -530,6 +555,36 @@ footer {
 .reveal-d4 { transition-delay: 0.26s; }
 .reveal-d5 { transition-delay: 0.33s; }
 .reveal-d6 { transition-delay: 0.40s; }
+
+
+/* ── SPORTO IMAGE LOADING PLACEHOLDER ── */
+@keyframes sportoImageShimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+.product-img-wrapper img,
+.category-card img,
+.cart-item-img,
+.summary-item img,
+.thumb,
+#mainImg,
+.table-img {
+  background: linear-gradient(110deg, rgba(255,255,255,0.045) 8%, rgba(255,255,255,0.14) 18%, rgba(255,255,255,0.045) 33%);
+  background-size: 200% 100%;
+  animation: sportoImageShimmer 1.45s ease-in-out infinite;
+}
+img.image-loaded {
+  animation: none;
+  background: transparent;
+}
+img.image-failed {
+  animation: none;
+  background: linear-gradient(135deg, rgba(255,255,255,0.10), rgba(255,255,255,0.035));
+}
+@media (prefers-reduced-motion: reduce) {
+  img:not(.image-loaded) { animation: none; }
+}
+
 </style>
 </head>
 <body>
@@ -591,8 +646,15 @@ footer {
   <div class="hero-bg" id="heroBg"></div>
   <div class="hero-overlay"></div>
   <div class="hero-content">
-    <div class="hero-welcome">✦ Welcome to SPORTO</div>
-    <a href="collection.html?cat=all" class="liquid-glass-btn">✦ SHOP NOW</a>
+    <div class="hero-copy">
+      <div class="hero-kicker">New season / Sporto active</div>
+      <h1 class="hero-title">Move<span>with purpose</span></h1>
+      <p class="hero-subtitle">Performance essentials designed to keep up with every version of you.</p>
+      <div class="hero-actions">
+        <a href="collection.html" class="hero-btn hero-btn-primary">Shop collection <span>↗</span></a>
+        <a href="women.html" class="hero-btn hero-btn-ghost">Women <span>→</span></a>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -710,7 +772,7 @@ let PRODUCTS = [];
 
 const CATEGORIES = [
     { id:'women', name:'Women', img:'/images/cover-women.jpg', href:'women.html' },
-  { id:'men',   name:'Men',   img:'/images/cover-men.jpg',   href:'men.html'   },
+  { id:'men',   name:'Men',   img:'/images/cover-men.png',   href:'men.html'   },
   
 ];
 
@@ -793,8 +855,8 @@ function renderProducts(products) {
     return `
     <div class="product-card reveal ${delay}" onclick="goToProduct('${p.id}')">
       <div class="product-img-wrapper">
-        <img src="${p.images[0]}" alt="${p.name}" loading="lazy"
-             onerror="this.src='https://images.unsplash.com/photo-1483721310020-03333e577078?w=400&q=80'">
+        <img src="${p.images[0]}" alt="${p.name}" loading="lazy" onload="this.classList.add('image-loaded')"
+             onerror="this.onerror=null; this.removeAttribute('src'); this.classList.add('image-failed')">
         ${hasOffer ? `<div class="product-badge">-${discount}%</div>` : ''}
         <div class="stock-badge ${outOfStock ? 'out' : lowStock ? 'low' : ''}">
           ${outOfStock ? 'Out of stock' : lowStock ? `${p.stock} left` : `${p.stock} in stock`}
@@ -830,9 +892,9 @@ function renderCategories() {
   const delays = ['','reveal-d1','reveal-d2','reveal-d3','reveal-d4','reveal-d5'];
   const grid = document.getElementById('categoriesGrid');
   grid.innerHTML = CATEGORIES.map((c, idx) => `
-    <a class="category-card reveal ${delays[idx % 6]}" href="${c.href || ('collection.html?cat=' + c.id)}">
-      <img src="${c.img}" alt="${c.name}" loading="lazy"
-           onerror="this.src='https://images.unsplash.com/photo-1483721310020-03333e577078?w=400&q=80'">
+    <a class="category-card reveal ${delays[idx % 6]}" href="${c.href || 'collection.html'}">
+      <img src="${c.img}" alt="${c.name}" loading="lazy" onload="this.classList.add('image-loaded')"
+           onerror="this.onerror=null; this.removeAttribute('src'); this.classList.add('image-failed')">
       <div class="category-overlay"></div>
       <div class="category-name">${c.name}</div>
     </a>`).join('');
@@ -882,8 +944,8 @@ function renderCartItems() {
   }
   container.innerHTML = cart.map(item => `
     <div class="cart-item">
-      <img class="cart-item-img" src="${item.img}" alt="${item.name}"
-           onerror="this.src='https://images.unsplash.com/photo-1483721310020-03333e577078?w=300&q=60'">
+      <img class="cart-item-img" src="${item.img}" alt="${item.name}" onload="this.classList.add('image-loaded')"
+           onerror="this.onerror=null; this.removeAttribute('src'); this.classList.add('image-failed')">
       <div class="cart-item-info">
         <div class="cart-item-name">${item.name}</div>
         <div class="cart-item-price">${item.price} EGP × ${item.qty}</div>

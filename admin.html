@@ -171,6 +171,36 @@ td { color:var(--light-gray); }
   display:none; width:38px; height:38px; border-radius:10px; background:var(--glass-bg); border:1px solid var(--glass-border);
   color:white; align-items:center; justify-content:center; cursor:pointer; margin-right:10px;
 }
+
+
+/* ── SPORTO IMAGE LOADING PLACEHOLDER ── */
+@keyframes sportoImageShimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+.product-img-wrapper img,
+.category-card img,
+.cart-item-img,
+.summary-item img,
+.thumb,
+#mainImg,
+.table-img {
+  background: linear-gradient(110deg, rgba(255,255,255,0.045) 8%, rgba(255,255,255,0.14) 18%, rgba(255,255,255,0.045) 33%);
+  background-size: 200% 100%;
+  animation: sportoImageShimmer 1.45s ease-in-out infinite;
+}
+img.image-loaded {
+  animation: none;
+  background: transparent;
+}
+img.image-failed {
+  animation: none;
+  background: linear-gradient(135deg, rgba(255,255,255,0.10), rgba(255,255,255,0.035));
+}
+@media (prefers-reduced-motion: reduce) {
+  img:not(.image-loaded) { animation: none; }
+}
+
 </style>
 </head>
 <body>
@@ -193,7 +223,6 @@ td { color:var(--light-gray); }
     <div class="sidebar-brand">SPORTO <span>Admin Panel</span></div>
     <div class="nav-item active" data-panel="dashboard" onclick="switchPanel('dashboard')">📊 &nbsp;Dashboard</div>
     <div class="nav-item" data-panel="products" onclick="switchPanel('products')">👟 &nbsp;Products</div>
-    <div class="nav-item" data-panel="categories" onclick="switchPanel('categories')">🗂️ &nbsp;Category Covers</div>
     <div class="nav-item" data-panel="orders" onclick="switchPanel('orders')">📦 &nbsp;Orders</div>
     <div class="nav-item" data-panel="settings" onclick="switchPanel('settings')">⚙️ &nbsp;Site Settings</div>
     <div class="sidebar-footer">
@@ -236,21 +265,9 @@ td { color:var(--light-gray); }
       <div class="card">
         <div class="card-title">All Products</div>
         <table>
-          <thead><tr><th>Image</th><th>Name</th><th>Gender</th><th>Category</th><th>Price</th><th>Stock</th><th></th></tr></thead>
-          <tbody id="productsBody"><tr class="empty-row"><td colspan="7">Loading...</td></tr></tbody>
+          <thead><tr><th>Image</th><th>Name</th><th>Gender</th><th>Price</th><th>Stock</th><th></th></tr></thead>
+          <tbody id="productsBody"><tr class="empty-row"><td colspan="6">Loading...</td></tr></tbody>
         </table>
-      </div>
-    </div>
-
-    <!-- CATEGORY COVERS -->
-    <div class="panel" id="panel-categories">
-      <div class="card">
-        <div class="card-title">Men — Category Covers</div>
-        <div class="cat-cover-grid" id="menCoversGrid"></div>
-      </div>
-      <div class="card">
-        <div class="card-title">Women — Category Covers</div>
-        <div class="cat-cover-grid" id="womenCoversGrid"></div>
       </div>
     </div>
 
@@ -302,14 +319,6 @@ td { color:var(--light-gray); }
           <option value="men">Men</option>
           <option value="women">Women</option>
           <option value="unisex">Unisex</option>
-        </select>
-      </div>
-      <div class="field">
-        <label>Category</label>
-        <select id="pCategory">
-          <option value="gym-wear">Gym Wear</option>
-          <option value="casual-wear">Casual Wear</option>
-          <option value="shoes">Shoes</option>
         </select>
       </div>
     </div>
@@ -388,25 +397,14 @@ let ORDERS = [];
 let CATEGORY_IMAGES = {};
 let pendingImageUrls = []; // images attached to the product currently being edited
 
-const CATEGORY_LIST = [
-  { gender:'men',   id:'gym-wear',    name:'Gym Wear'    },
-  { gender:'men',   id:'casual-wear', name:'Casual Wear' },
-  { gender:'men',   id:'shoes',       name:'Shoes'       },
-  { gender:'women', id:'gym-wear',    name:'Gym Wear'    },
-  { gender:'women', id:'casual-wear', name:'Casual Wear' },
-  { gender:'women', id:'shoes',       name:'Shoes'       },
-];
-
 async function initAdmin() {
   const ok = await initFirebase();
   if (!ok) return;
   await loadProducts();
   await loadOrders();
-  await loadCategoryImages();
   await loadSettings();
   renderDashboard();
   renderProductsTable();
-  renderCategoryCovers();
   renderOrdersTable();
 }
 
@@ -416,7 +414,6 @@ async function initAdmin() {
 const PANEL_INFO = {
   dashboard:  { title:'Dashboard',        sub:'Overview of your store' },
   products:   { title:'Products',         sub:'Manage your product catalog' },
-  categories: { title:'Category Covers',  sub:'Update the cover image for each category' },
   orders:     { title:'Orders',           sub:'View all customer orders' },
   settings:   { title:'Site Settings',    sub:'Global site configuration' },
 };
@@ -460,10 +457,9 @@ function renderProductsTable() {
     const stockBadge = p.stock <= 0 ? `<span class="badge out">Out</span>` : p.stock <= 3 ? `<span class="badge low">${p.stock} left</span>` : `<span class="badge in">${p.stock} in stock</span>`;
     return `
     <tr>
-      <td><img class="table-img" src="${(p.images && p.images[0]) || ''}" onerror="this.style.opacity=0"></td>
+      <td><img class="table-img" src="${(p.images && p.images[0]) || ''}" onload="this.classList.add('image-loaded')" onerror="this.style.opacity=0"></td>
       <td>${p.name || '—'}</td>
       <td style="text-transform:capitalize;">${p.gender || '—'}</td>
-      <td>${formatCatName(p.category)}</td>
       <td>${p.price || 0} EGP${p.oldPrice ? ` <span style="color:#777;text-decoration:line-through;font-size:10px;">${p.oldPrice}</span>` : ''}</td>
       <td>${stockBadge}</td>
       <td class="table-actions">
@@ -474,10 +470,6 @@ function renderProductsTable() {
   }).join('');
 }
 
-function formatCatName(c) {
-  return { 'gym-wear':'Gym Wear', 'casual-wear':'Casual Wear', 'shoes':'Shoes' }[c] || c || '—';
-}
-
 function openProductModal(id) {
   pendingImageUrls = [];
   document.getElementById('pId').value = '';
@@ -486,7 +478,6 @@ function openProductModal(id) {
   document.getElementById('pOldPrice').value = '';
   document.getElementById('pStock').value = '';
   document.getElementById('pGender').value = 'men';
-  document.getElementById('pCategory').value = 'gym-wear';
   document.getElementById('pDescription').value = '';
   document.getElementById('productModalTitle').textContent = 'Add Product';
   document.getElementById('productUploadProgress').textContent = '';
@@ -500,7 +491,6 @@ function openProductModal(id) {
       document.getElementById('pOldPrice').value = p.oldPrice || '';
       document.getElementById('pStock').value = p.stock || 0;
       document.getElementById('pGender').value = p.gender || 'men';
-      document.getElementById('pCategory').value = p.category || 'gym-wear';
       document.getElementById('pDescription').value = p.description || '';
       pendingImageUrls = [...(p.images || [])];
       document.getElementById('productModalTitle').textContent = 'Edit Product';
@@ -600,7 +590,6 @@ async function saveProduct() {
   const oldPrice = parseFloat(document.getElementById('pOldPrice').value) || null;
   const stock = parseInt(document.getElementById('pStock').value) || 0;
   const gender = document.getElementById('pGender').value;
-  const category = document.getElementById('pCategory').value;
   const description = document.getElementById('pDescription').value.trim();
 
   if (!name || !price || !pendingImageUrls.length) {
@@ -608,7 +597,7 @@ async function saveProduct() {
     return;
   }
 
-  const data = { name, price, oldPrice, stock, gender, category, description, images: pendingImageUrls };
+  const data = { name, price, oldPrice, stock, gender, description, images: pendingImageUrls };
 
   try {
     if (id) {
@@ -637,52 +626,6 @@ async function deleteProduct(id) {
     renderDashboard();
   } catch(e) {
     showToast('⚠️ Error deleting product');
-  }
-}
-
-// ════════════════════════════════════════
-// CATEGORY COVER IMAGES
-// ════════════════════════════════════════
-async function loadCategoryImages() {
-  try {
-    const snap = await fbModules.getDocs(fbModules.collection(db, 'categoryImages'));
-    CATEGORY_IMAGES = {};
-    snap.docs.forEach(d => { CATEGORY_IMAGES[d.id] = d.data().url; });
-  } catch(e) { CATEGORY_IMAGES = {}; }
-}
-
-function renderCategoryCovers() {
-  const menGrid = document.getElementById('menCoversGrid');
-  const womenGrid = document.getElementById('womenCoversGrid');
-  menGrid.innerHTML = '';
-  womenGrid.innerHTML = '';
-
-  CATEGORY_LIST.forEach(c => {
-    const key = `${c.gender}-${c.id}`;
-    const currentUrl = CATEGORY_IMAGES[key] || '';
-    const card = document.createElement('div');
-    card.className = 'cat-cover-card';
-    card.innerHTML = `
-      <img class="cat-cover-preview" src="${currentUrl}" onerror="this.style.opacity=0.2;this.style.background='rgba(255,255,255,0.05)'">
-      <div class="cat-cover-label">${c.name}</div>
-      <input type="file" accept="image/*" style="display:none;" id="catfile-${key}" onchange="uploadCategoryCover('${key}', this.files[0])">
-      <button class="btn-ghost btn btn-sm" style="width:100%;" onclick="document.getElementById('catfile-${key}').click()">📤 Upload Cover</button>
-    `;
-    (c.gender === 'men' ? menGrid : womenGrid).appendChild(card);
-  });
-}
-
-async function uploadCategoryCover(key, file) {
-  if (!file) return;
-  showToast('Processing cover image...');
-  try {
-    const base64 = await fileToCompressedBase64(file, 700, 0.7);
-    CATEGORY_IMAGES[key] = base64;
-    await fbModules.setDoc(fbModules.doc(db, 'categoryImages', key), { url: base64 });
-    showToast('✓ Category cover updated');
-    renderCategoryCovers();
-  } catch(e) {
-    showToast('⚠️ Upload failed: ' + e.message);
   }
 }
 

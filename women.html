@@ -302,36 +302,6 @@ header {
   border-radius: 999px; font-size: 10px; font-weight: 500; gap: 4px; letter-spacing: 0.5px;
 }
 
-/* ── CATEGORIES GRID ── */
-.categories-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 14px; }
-.category-card {
-  border-radius: 18px; overflow: hidden; position: relative;
-  aspect-ratio: 3/4; cursor: pointer;
-  background: var(--glass-bg);
-  backdrop-filter: blur(var(--glass-blur)) saturate(160%);
-  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(160%);
-  border: 1px solid var(--glass-border);
-  transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s, opacity 0.6s;
-  text-decoration: none;
-}
-.category-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 16px 36px rgba(0,0,0,0.4);
-  border-color: rgba(255,255,255,0.3);
-}
-.category-card img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s; }
-.category-card:hover img { transform: scale(1.05); }
-.category-overlay {
-  position: absolute; inset: 0;
-  background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 55%);
-}
-.category-name {
-  position: absolute; bottom: 14px; left: 0; right: 0;
-  text-align: center; color: white; font-size: 10px; font-weight: 500;
-  letter-spacing: 3px; text-transform: uppercase;
-}
-
-/* ── FOOTER ── */
 footer {
   background: rgba(255,255,255,0.03);
   padding: 56px 24px 28px;
@@ -437,6 +407,36 @@ footer {
 .reveal-d4 { transition-delay: 0.26s; }
 .reveal-d5 { transition-delay: 0.33s; }
 .reveal-d6 { transition-delay: 0.40s; }
+
+
+/* ── SPORTO IMAGE LOADING PLACEHOLDER ── */
+@keyframes sportoImageShimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+.product-img-wrapper img,
+.category-card img,
+.cart-item-img,
+.summary-item img,
+.thumb,
+#mainImg,
+.table-img {
+  background: linear-gradient(110deg, rgba(255,255,255,0.045) 8%, rgba(255,255,255,0.14) 18%, rgba(255,255,255,0.045) 33%);
+  background-size: 200% 100%;
+  animation: sportoImageShimmer 1.45s ease-in-out infinite;
+}
+img.image-loaded {
+  animation: none;
+  background: transparent;
+}
+img.image-failed {
+  animation: none;
+  background: linear-gradient(135deg, rgba(255,255,255,0.10), rgba(255,255,255,0.035));
+}
+@media (prefers-reduced-motion: reduce) {
+  img:not(.image-loaded) { animation: none; }
+}
+
 </style>
 </head>
 <body>
@@ -503,14 +503,6 @@ footer {
   <div style="font-family:'Cormorant Garamond', serif;font-size:clamp(28px,4vw,44px);font-weight:700;letter-spacing:3px;text-transform:uppercase;">WOMEN</div>
 </div>
 
-<!-- COLLECTIONS -->
-<div class="section">
-  <div class="section-label reveal">Women</div>
-  <div class="section-title reveal reveal-d1">SHOP BY CATEGORY</div>
-  <div class="categories-grid" id="categoriesGrid"></div>
-</div>
-
-<!-- ALL PRODUCTS -->
 <div id="all-products" class="section">
   <div class="section-label reveal" id="productsLabel">Women's Collection</div>
   <div class="section-title reveal reveal-d1">ALL WOMEN'S PRODUCTS</div>
@@ -586,19 +578,12 @@ footer {
 // ── DATA ──
 let PRODUCTS = [];
 
-const CATEGORIES = [
-  { id:'gym-wear',    name:'Gym Wear',    img:'/images/women-gym-cover.jpg'    },
-  { id:'casual-wear', name:'Casual Wear', img:'/images/women-casual-cover.jpg' },
-  { id:'shoes',       name:'Shoes',       img:'/images/women-shoes-cover.jpg'  },
-];
-
 let cart = JSON.parse(localStorage.getItem('sporto_cart') || '[]');
 let isArabic = false;
 
 // ── INIT ──
 document.addEventListener('DOMContentLoaded', () => {
   renderProducts(PRODUCTS.filter(p => p.gender === 'women' || p.gender === 'unisex'));
-  renderCategories();
   updateCartUI();
   loadFromFirebase();
   initScrollReveal();
@@ -640,17 +625,6 @@ async function loadFromFirebase() {
     const db = getFirestore(app);
     const pSnap = await getDocs(collection(db, 'products'));
     if (!pSnap.empty) { PRODUCTS = pSnap.docs.map(d=>({id:d.id,...d.data()})); renderProducts(PRODUCTS.filter(p => p.gender === 'women' || p.gender === 'unisex')); }
-    const cSnap = await getDocs(collection(db, 'categoryImages'));
-    if (!cSnap.empty) {
-      cSnap.docs.forEach(d => {
-        if (d.id.startsWith('women-')) {
-          const catId = d.id.replace('women-', '');
-          const match = CATEGORIES.find(c => c.id === catId);
-          if (match) match.img = d.data().url;
-        }
-      });
-    }
-    renderCategories();
   } catch(e) { console.log('Firebase:', e.message); }
 }
 
@@ -671,8 +645,8 @@ function renderProducts(products) {
     return `
     <div class="product-card reveal ${delay}" onclick="goToProduct('${p.id}')">
       <div class="product-img-wrapper">
-        <img src="${p.images[0]}" alt="${p.name}" loading="lazy"
-             onerror="this.src='https://images.unsplash.com/photo-1483721310020-03333e577078?w=400&q=80'">
+        <img src="${p.images[0]}" alt="${p.name}" loading="lazy" onload="this.classList.add('image-loaded')"
+             onerror="this.onerror=null; this.removeAttribute('src'); this.classList.add('image-failed')">
         ${hasOffer ? `<div class="product-badge">-${discount}%</div>` : ''}
         <div class="stock-badge ${outOfStock ? 'out' : lowStock ? 'low' : ''}">
           ${outOfStock ? 'Out of stock' : lowStock ? `${p.stock} left` : `${p.stock} in stock`}
@@ -700,20 +674,6 @@ function renderProducts(products) {
       </div>
     </div>`;
   }).join('');
-  observeNewCards();
-}
-
-// ── RENDER CATEGORIES ──
-function renderCategories() {
-  const delays = ['','reveal-d1','reveal-d2','reveal-d3','reveal-d4','reveal-d5'];
-  const grid = document.getElementById('categoriesGrid');
-  grid.innerHTML = CATEGORIES.map((c, idx) => `
-    <a class="category-card reveal ${delays[idx % 6]}" href="collection.html?gender=women&cat=${c.id}">
-      <img src="${c.img}" alt="${c.name}" loading="lazy"
-           onerror="this.src='https://images.unsplash.com/photo-1483721310020-03333e577078?w=400&q=80'">
-      <div class="category-overlay"></div>
-      <div class="category-name">${c.name}</div>
-    </a>`).join('');
   observeNewCards();
 }
 
@@ -760,8 +720,8 @@ function renderCartItems() {
   }
   container.innerHTML = cart.map(item => `
     <div class="cart-item">
-      <img class="cart-item-img" src="${item.img}" alt="${item.name}"
-           onerror="this.src='https://images.unsplash.com/photo-1483721310020-03333e577078?w=300&q=60'">
+      <img class="cart-item-img" src="${item.img}" alt="${item.name}" onload="this.classList.add('image-loaded')"
+           onerror="this.onerror=null; this.removeAttribute('src'); this.classList.add('image-failed')">
       <div class="cart-item-info">
         <div class="cart-item-name">${item.name}</div>
         <div class="cart-item-price">${item.price} EGP × ${item.qty}</div>

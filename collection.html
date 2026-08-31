@@ -305,6 +305,36 @@ header {
   white-space:nowrap; border:1px solid rgba(255,255,255,0.16);
 }
 .toast.show { transform:translateX(-50%) translateY(0); }
+
+
+/* ── SPORTO IMAGE LOADING PLACEHOLDER ── */
+@keyframes sportoImageShimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+.product-img-wrapper img,
+.category-card img,
+.cart-item-img,
+.summary-item img,
+.thumb,
+#mainImg,
+.table-img {
+  background: linear-gradient(110deg, rgba(255,255,255,0.045) 8%, rgba(255,255,255,0.14) 18%, rgba(255,255,255,0.045) 33%);
+  background-size: 200% 100%;
+  animation: sportoImageShimmer 1.45s ease-in-out infinite;
+}
+img.image-loaded {
+  animation: none;
+  background: transparent;
+}
+img.image-failed {
+  animation: none;
+  background: linear-gradient(135deg, rgba(255,255,255,0.10), rgba(255,255,255,0.035));
+}
+@media (prefers-reduced-motion: reduce) {
+  img:not(.image-loaded) { animation: none; }
+}
+
 </style>
 </head>
 <body>
@@ -333,8 +363,6 @@ header {
   <a href="shop.html">Home</a>
   <span>›</span>
   <span id="bcGender">—</span>
-  <span>›</span>
-  <span id="bcCategory" style="color:var(--white);">—</span>
 </div>
 
 <div class="page-title-wrap">
@@ -353,13 +381,6 @@ header {
         <label class="filter-option"><input type="radio" name="gender" value="" checked onchange="applyFilters()"> All</label>
         <label class="filter-option"><input type="radio" name="gender" value="men" onchange="applyFilters()"> Men</label>
         <label class="filter-option"><input type="radio" name="gender" value="women" onchange="applyFilters()"> Women</label>
-      </div>
-      <div class="filter-group">
-        <div class="filter-title">Category</div>
-        <label class="filter-option"><input type="radio" name="cat" value="" checked onchange="applyFilters()"> All</label>
-        <label class="filter-option"><input type="radio" name="cat" value="gym-wear" onchange="applyFilters()"> Gym Wear</label>
-        <label class="filter-option"><input type="radio" name="cat" value="casual-wear" onchange="applyFilters()"> Casual Wear</label>
-        <label class="filter-option"><input type="radio" name="cat" value="shoes" onchange="applyFilters()"> Shoes</label>
       </div>
       <div class="filter-group">
         <div class="filter-title">Max Price</div>
@@ -422,7 +443,6 @@ header {
 <script>
 let PRODUCTS = [];
 let filteredProducts = [];
-const CATEGORY_NAMES = { 'gym-wear':'Gym Wear', 'casual-wear':'Casual Wear', 'shoes':'Shoes' };
 const GENDER_NAMES = { men:'Men', women:'Women' };
 
 let cart = JSON.parse(localStorage.getItem('sporto_cart') || '[]');
@@ -430,21 +450,17 @@ let cart = JSON.parse(localStorage.getItem('sporto_cart') || '[]');
 document.addEventListener('DOMContentLoaded', async () => {
   const params = new URLSearchParams(window.location.search);
   const gender = params.get('gender') || '';
-  const cat = params.get('cat') || '';
-
   if (gender) document.querySelector(`input[name="gender"][value="${gender}"]`).checked = true;
-  if (cat) document.querySelector(`input[name="cat"][value="${cat}"]`).checked = true;
 
-  updateBreadcrumb(gender, cat);
+  updateBreadcrumb(gender);
   updateCartUI();
   await loadFromFirebase();
   applyFilters();
 });
 
-function updateBreadcrumb(gender, cat) {
+function updateBreadcrumb(gender) {
   document.getElementById('bcGender').textContent = gender ? GENDER_NAMES[gender] : 'All';
-  document.getElementById('bcCategory').textContent = cat ? CATEGORY_NAMES[cat] : 'All Products';
-  document.getElementById('pageTitle').textContent = cat ? CATEGORY_NAMES[cat] : (gender ? GENDER_NAMES[gender] : 'All Products');
+  document.getElementById('pageTitle').textContent = gender ? GENDER_NAMES[gender] : 'All Products';
 }
 
 async function loadFromFirebase() {
@@ -462,17 +478,15 @@ async function loadFromFirebase() {
 
 function applyFilters() {
   const gender = document.querySelector('input[name="gender"]:checked').value;
-  const cat = document.querySelector('input[name="cat"]:checked').value;
   const maxPrice = parseInt(document.getElementById('priceRange').value);
   const inStockOnly = document.getElementById('inStockOnly').checked;
   const sort = document.getElementById('sortSelect').value;
 
   document.getElementById('priceVal').textContent = `${maxPrice} EGP`;
-  updateBreadcrumb(gender, cat);
+  updateBreadcrumb(gender);
 
   filteredProducts = PRODUCTS.filter(p => {
     if (gender && p.gender !== gender && p.gender !== 'unisex') return false;
-    if (cat && p.category !== cat) return false;
     if (p.price > maxPrice) return false;
     if (inStockOnly && p.stock <= 0) return false;
     return true;
@@ -489,7 +503,6 @@ function applyFilters() {
 
 function clearFilters() {
   document.querySelector('input[name="gender"][value=""]').checked = true;
-  document.querySelector('input[name="cat"][value=""]').checked = true;
   document.getElementById('priceRange').value = 5000;
   document.getElementById('inStockOnly').checked = false;
   document.getElementById('sortSelect').value = 'default';
@@ -514,8 +527,8 @@ function renderProducts(products) {
     return `
     <div class="product-card" onclick="goToProduct('${p.id}')">
       <div class="product-img-wrapper">
-        <img src="${p.images[0]}" alt="${p.name}" loading="lazy"
-             onerror="this.src='https://images.unsplash.com/photo-1483721310020-03333e577078?w=400&q=80'">
+        <img src="${p.images[0]}" alt="${p.name}" loading="lazy" onload="this.classList.add('image-loaded')"
+             onerror="this.onerror=null; this.removeAttribute('src'); this.classList.add('image-failed')">
         ${hasOffer ? `<div class="product-badge">-${discount}%</div>` : ''}
         <div class="stock-badge ${outOfStock ? 'out' : lowStock ? 'low' : ''}">
           ${outOfStock ? 'Out of stock' : lowStock ? `${p.stock} left` : `${p.stock} in stock`}
@@ -583,8 +596,8 @@ function renderCartItems() {
   }
   container.innerHTML = cart.map(item => `
     <div class="cart-item">
-      <img class="cart-item-img" src="${item.img}" alt="${item.name}"
-           onerror="this.src='https://images.unsplash.com/photo-1483721310020-03333e577078?w=300&q=60'">
+      <img class="cart-item-img" src="${item.img}" alt="${item.name}" onload="this.classList.add('image-loaded')"
+           onerror="this.onerror=null; this.removeAttribute('src'); this.classList.add('image-failed')">
       <div class="cart-item-info">
         <div class="cart-item-name">${item.name}</div>
         <div class="cart-item-price">${item.price} EGP × ${item.qty}</div>

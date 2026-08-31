@@ -181,6 +181,36 @@ header {
   transition:all 0.2s;
 }
 .back-shop-btn:hover { background:var(--white); }
+
+
+/* ── SPORTO IMAGE LOADING PLACEHOLDER ── */
+@keyframes sportoImageShimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+.product-img-wrapper img,
+.category-card img,
+.cart-item-img,
+.summary-item img,
+.thumb,
+#mainImg,
+.table-img {
+  background: linear-gradient(110deg, rgba(255,255,255,0.045) 8%, rgba(255,255,255,0.14) 18%, rgba(255,255,255,0.045) 33%);
+  background-size: 200% 100%;
+  animation: sportoImageShimmer 1.45s ease-in-out infinite;
+}
+img.image-loaded {
+  animation: none;
+  background: transparent;
+}
+img.image-failed {
+  animation: none;
+  background: linear-gradient(135deg, rgba(255,255,255,0.10), rgba(255,255,255,0.035));
+}
+@media (prefers-reduced-motion: reduce) {
+  img:not(.image-loaded) { animation: none; }
+}
+
 </style>
 </head>
 <body>
@@ -301,7 +331,7 @@ function renderOrderSummary() {
 
   container.innerHTML = cart.map(item => `
     <div class="summary-item">
-      <img src="${item.img}" alt="${item.name}" onerror="this.src='https://images.unsplash.com/photo-1483721310020-03333e577078?w=200&q=60'">
+      <img src="${item.img}" alt="${item.name}" onload="this.classList.add('image-loaded')" onerror="this.onerror=null; this.removeAttribute('src'); this.classList.add('image-failed')">
       <div class="summary-item-info">
         <div class="summary-item-name">${item.name}</div>
         <div class="summary-item-qty">Qty: ${item.qty}</div>
