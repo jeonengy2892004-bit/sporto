@@ -336,6 +336,7 @@ img.image-failed {
 }
 
 </style>
+  <link rel="stylesheet" href="redesign.css">
 </head>
 <body>
 
@@ -450,17 +451,19 @@ let cart = JSON.parse(localStorage.getItem('sporto_cart') || '[]');
 document.addEventListener('DOMContentLoaded', async () => {
   const params = new URLSearchParams(window.location.search);
   const gender = params.get('gender') || '';
+  const saleOnly = params.get('sale') === '1';
   if (gender) document.querySelector(`input[name="gender"][value="${gender}"]`).checked = true;
 
-  updateBreadcrumb(gender);
+  window.sportoSaleOnly = saleOnly;
+  updateBreadcrumb(gender, saleOnly);
   updateCartUI();
   await loadFromFirebase();
   applyFilters();
 });
 
-function updateBreadcrumb(gender) {
-  document.getElementById('bcGender').textContent = gender ? GENDER_NAMES[gender] : 'All';
-  document.getElementById('pageTitle').textContent = gender ? GENDER_NAMES[gender] : 'All Products';
+function updateBreadcrumb(gender, saleOnly = window.sportoSaleOnly) {
+  document.getElementById('bcGender').textContent = saleOnly ? 'Sale' : (gender ? GENDER_NAMES[gender] : 'All');
+  document.getElementById('pageTitle').textContent = saleOnly ? 'Sale' : (gender ? GENDER_NAMES[gender] : 'All Products');
 }
 
 async function loadFromFirebase() {
@@ -483,10 +486,11 @@ function applyFilters() {
   const sort = document.getElementById('sortSelect').value;
 
   document.getElementById('priceVal').textContent = `${maxPrice} EGP`;
-  updateBreadcrumb(gender);
+  updateBreadcrumb(gender, window.sportoSaleOnly);
 
   filteredProducts = PRODUCTS.filter(p => {
     if (gender && p.gender !== gender && p.gender !== 'unisex') return false;
+    if (window.sportoSaleOnly && !(p.oldPrice && p.oldPrice > p.price)) return false;
     if (p.price > maxPrice) return false;
     if (inStockOnly && p.stock <= 0) return false;
     return true;
