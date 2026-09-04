@@ -75,7 +75,7 @@ body::after {
 .announcement-bar {
   background: rgba(255,255,255,0.04);
   backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-  color: var(--light-gray);
+  color:#0a0a0c;
   text-align: center;
   padding: 11px 20px;
   font-size: 11px;
@@ -458,7 +458,7 @@ img.image-failed {
     </button>
     <a href="shop.html" class="brand-name-header">SPORTO</a>
     <div class="header-right">
-      <button class="lang-btn" onclick="toggleLang()" id="langBtn">العربية</button>
+      
       <button class="cart-btn" onclick="toggleCart()" aria-label="Cart">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
           <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
@@ -761,13 +761,7 @@ function toggleMenu(forceClose) {
   document.body.style.overflow = menu.classList.contains('open') ? 'hidden' : '';
 }
 
-// ── LANG ──
-function toggleLang() {
-  isArabic = !isArabic;
-  document.getElementById('langBtn').textContent = isArabic ? 'English' : 'العربية';
-  document.documentElement.dir = isArabic ? 'rtl' : 'ltr';
-  showToast(isArabic ? '🌐 تم التبديل للعربية' : '🌐 Switched to English');
-}
+
 
 // ── TOAST ──
 function showToast(msg) {

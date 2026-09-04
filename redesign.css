@@ -568,9 +568,9 @@ body:has(.container) { min-height: 100vh; }
   .products-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: 10px !important; }
   .product-card { border-radius: 16px !important; }
   .home-product-group { margin-top: 30px; padding-top: 20px; }
-  .home-group-head { align-items: flex-start; flex-direction: column; gap: 12px; }
+  .home-group-head { align-items: center; flex-direction: row; justify-content: space-between; gap: 10px;  }
   .home-group-title { font-size: 31px; }
-  .home-group-link { align-self: flex-start; }
+  .home-group-link { align-self: center; white-space: nowrap; }
   .category-card { min-height: 190px !important; border-radius: 18px !important; }
 }
 
@@ -828,3 +828,77 @@ footer .footer-brand::before { box-shadow: inset 0 0 0 3px rgba(255,255,255,0.16
   .footer-credit { gap: 6px; font-size: 8px; letter-spacing: 1.1px; }
   .credit-instagram { width: 17px; height: 17px; flex-basis: 17px; }
 }
+
+
+/* Final correction: Sale badge + current price are red; old price stays neutral */
+.home-sale-group .product-badge,
+.home-sale-group .discount-badge { background: #c7353d !important; color: #fff !important; }
+.home-sale-group .price-new,
+.home-sale-group .p-price-new { color: #c7353d !important; }
+.home-sale-group .price-old,
+.home-sale-group .p-price-old { color: #7d878d !important; }
+
+/* Admin: crisp light canvas and pure-black typography */
+body.admin-page,
+body.admin-page .login-screen,
+body.admin-page .admin-shell,
+body.admin-page .main-area {
+  background: #eef2f4 !important;
+  color: #050607 !important;
+}
+body.admin-page::before,
+body.admin-page::after { display: none !important; }
+body.admin-page .admin-shell *,
+body.admin-page .login-screen * {
+  color: #050607;
+}
+body.admin-page .sidebar {
+  background: #e1e8ec !important;
+  border-right-color: #cbd5da !important;
+  box-shadow: 8px 0 24px rgba(30,45,55,0.06) !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+body.admin-page .card,
+body.admin-page .stat-card,
+body.admin-page .cat-cover-card,
+body.admin-page .modal,
+body.admin-page .login-card {
+  background: #fff !important;
+  border-color: #d6dfe3 !important;
+  box-shadow: 0 10px 24px rgba(30,45,55,0.08) !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+body.admin-page .main-sub,
+body.admin-page .sidebar-brand span,
+body.admin-page .stat-label,
+body.admin-page .card-title,
+body.admin-page .field label,
+body.admin-page .upload-placeholder,
+body.admin-page .upload-progress,
+body.admin-page th,
+body.admin-page td,
+body.admin-page .empty-row td,
+body.admin-page input::placeholder,
+body.admin-page textarea::placeholder { color: #050607 !important; }
+body.admin-page .nav-item,
+body.admin-page .nav-item:hover,
+body.admin-page .nav-item.active,
+body.admin-page .btn-ghost,
+body.admin-page .btn-danger,
+body.admin-page .logout-btn,
+body.admin-page .modal-close { color: #050607 !important; }
+body.admin-page .form-field input,
+body.admin-page .form-field select,
+body.admin-page .form-field textarea,
+body.admin-page .field input,
+body.admin-page .field select,
+body.admin-page .field textarea,
+body.admin-page .login-card input {
+  background: #fff !important;
+  color: #050607 !important;
+}
+body.admin-page .field select option,
+body.admin-page .form-field select option { background: #fff !important; color: #050607 !important; }
+body.admin-page .mobile-menu-btn { color: #050607 !important; background: #fff !important; border-color: #cbd5da !important; }

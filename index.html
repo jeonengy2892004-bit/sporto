@@ -285,10 +285,7 @@
 <body>
 <div class="container" id="mainCard">
 
-  <button class="lang-toggle" onclick="toggleLang()">
-    <span>🌐</span>
-    <span id="langLabel">العربية</span>
-  </button>
+  
 
   <div class="brand-logo">sporto</div>
   <div class="brand-tagline">
@@ -337,22 +334,7 @@
 <script>
 let isArabic = false;
 
-function toggleLang() {
-  isArabic = !isArabic;
-  const card = document.getElementById('mainCard');
-  const label = document.getElementById('langLabel');
-  if (isArabic) {
-    card.setAttribute('lang-ar', '');
-    document.documentElement.setAttribute('dir', 'rtl');
-    label.textContent = 'English';
-    document.title = 'sporto — ملابس رياضيه';
-  } else {
-    card.removeAttribute('lang-ar');
-    document.documentElement.removeAttribute('dir');
-    label.textContent = 'العربية';
-    document.title = 'AvoRa — Accessories';
-  }
-}
+
 
 function addRipple(e) {
   const btn = e.currentTarget;

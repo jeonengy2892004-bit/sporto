@@ -75,7 +75,7 @@ body::after {
 .announcement-bar {
   background: rgba(255,255,255,0.04);
   backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-  color: var(--light-gray);
+  color:#0a0a0c;
   text-align: center;
   padding: 11px 20px;
   font-size: 11px;
@@ -585,6 +585,18 @@ img.image-failed {
   img:not(.image-loaded) { animation: none; }
 }
 
+
+
+.footer-bottom-text { display:flex; align-items:center; flex-wrap:wrap; gap:0; }
+.fb-line:not(:last-child)::after { content: " · "; margin: 0 2px; opacity:0.6; }
+
+@media (max-width: 640px) {
+  .footer-bottom { flex-direction: column; align-items: center; text-align: center; gap: 10px; }
+  .footer-bottom-text { flex-direction: column; gap: 6px; }
+  .fb-line:not(:last-child)::after { content: none; }
+}
+
+
 </style>
   <link rel="stylesheet" href="redesign.css">
 </head>
@@ -606,7 +618,7 @@ img.image-failed {
     </button>
     <a href="shop.html" class="brand-name-header">SPORTO</a>
     <div class="header-right">
-      <button class="lang-btn" onclick="toggleLang()" id="langBtn">العربية</button>
+      
       <button class="cart-btn" onclick="toggleCart()" aria-label="Cart">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
           <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
@@ -786,8 +798,12 @@ img.image-failed {
   </div>
   <div class="footer-inner" style="grid-template-columns:1fr;border-top:1px solid rgba(255,255,255,0.08);padding-top:24px;margin-bottom:0;">
     <div class="footer-bottom reveal">
-      <span>© 2026 SPORTO &nbsp;·&nbsp; 💵 COD Available &nbsp;·&nbsp; 🚚 Free Shipping 900+ EGP</span>
-      <span class="footer-credit">
+  <div class="footer-bottom-text">
+    <span class="fb-line">© 2026 SPORTO</span>
+    <span class="fb-line">💵 COD Available</span>
+    <span class="fb-line">🚚 Free Shipping 900+ EGP</span>
+  </div>
+  <span class="footer-credit">
   <svg class="credit-instagram" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.8" fill="currentColor" stroke="none"/></svg>
   <span class="credit-label">POWERED BY</span>
   <a href="https://www.instagram.com/webgy_?igsh=ZHFqcWhmeWtzOWMy&utm_source=qr" target="_blank" rel="noopener" class="credit-link">webgy</a>
@@ -1159,13 +1175,7 @@ function toggleMenu(forceClose) {
   document.body.style.overflow = menu.classList.contains('open') ? 'hidden' : '';
 }
 
-// ── LANG ──
-function toggleLang() {
-  isArabic = !isArabic;
-  document.getElementById('langBtn').textContent = isArabic ? 'English' : 'العربية';
-  document.documentElement.dir = isArabic ? 'rtl' : 'ltr';
-  showToast(isArabic ? '🌐 تم التبديل للعربية' : '🌐 Switched to English');
-}
+
 
 // ── TOAST ──
 function showToast(msg) {
